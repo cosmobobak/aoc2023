@@ -14,21 +14,11 @@ pub fn task02() {
                 for colour_count in round.split(',') {
                     let (num, colour) = colour_count.trim().split_once(' ').unwrap();
                     let num = num.parse::<u64>().unwrap();
-                    let colour = match colour {
-                        "red" => 0,
-                        "green" => 1,
-                        "blue" => 2,
-                        _ => unreachable!(),
-                    };
-                    acc[colour] = acc[colour].max(num);
+                    let idx = usize::from(2 - (colour.as_bytes()[0] - 97) / 6);
+                    acc[idx] = acc[idx].max(num);
                 }
             }
-            let is_within_limit =
-                usize::from(acc[0] <= LIMIT[0] && acc[1] <= LIMIT[1] && acc[2] <= LIMIT[2]);
-            let index_sum = (i + 1) * is_within_limit;
-            let power = acc.iter().product::<u64>();
-
-            (index_sum, power)
+            ((i + 1) * usize::from(acc[0] <= LIMIT[0] && acc[1] <= LIMIT[1] && acc[2] <= LIMIT[2]), acc.iter().product::<u64>())
         })
         .fold((0, 0), |(sum1, sum2), (v1, v2)| (sum1 + v1, sum2 + v2));
 
