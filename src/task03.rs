@@ -1,9 +1,12 @@
+use std::collections::{HashMap, hash_map::{OccupiedEntry, Entry}};
+
 pub fn task03() {
     let start = std::time::Instant::now();
     let task = include_str!("../tasks/task03.txt");
 
     let task = task.as_bytes();
     let row_len = task.iter().position(|&b| b == b'\n').unwrap() as i64 + 1;
+    let mut num_pairings = HashMap::<i64, (i64, bool)>::new();
 
     let result = task
         .split(|&b| b == b'\n')
@@ -59,18 +62,38 @@ pub fn task03() {
 
             None
         })
-        .map(|(_, slice)| {
+        .map(|(k, slice)| {
             let mut num = 0;
             for &byte in slice {
                 num *= 10;
                 num += i64::from(byte - b'0');
             }
+            if task[k as usize] == b'*' {
+                match num_pairings.entry(k) {
+                    Entry::Occupied(mut entry) => {
+                        let (n_existing, has_been_multiplied) = entry.get_mut();
+                        assert!(
+                            !*has_been_multiplied,
+                            "Number {} has already been multiplied (row {}, column {}) - attempted to multiply by {}",
+                            *n_existing,
+                            k / row_len,
+                            k % row_len,
+                            num,
+                        );
+                        *has_been_multiplied = true;
+                        *n_existing *= num;
+                    }
+                    Entry::Vacant(entry) => {
+                        entry.insert((num, false));
+                    }
+                }
+            }
             num
         })
         .sum::<i64>();
 
-    println!("Part 1: {}", result);
-    // println!("Part 2: {}", result.1);
+    println!("Part 1: {result}");
+    println!("Part 2: {}", num_pairings.values().filter(|(_, has_been_multiplied)| *has_been_multiplied).map(|(n, _)| n).sum::<i64>());
     let elapsed = start.elapsed();
     println!("Elapsed: {:.3}ms", elapsed.as_secs_f64() * 1000.0);
 }
