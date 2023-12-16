@@ -1,11 +1,4 @@
-#![allow(
-    clippy::cast_possible_truncation,
-    clippy::cast_sign_loss,
-    clippy::cast_possible_wrap
-)]
-
 use rayon::prelude::*;
-use rayon::slice::ParallelSlice;
 
 #[derive(Debug, Clone, Copy)]
 struct Mapping {
