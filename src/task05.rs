@@ -4,8 +4,8 @@
     clippy::cast_possible_wrap
 )]
 
-use rayon::slice::ParallelSlice;
 use rayon::prelude::*;
+use rayon::slice::ParallelSlice;
 
 #[derive(Debug, Clone, Copy)]
 struct Mapping {
@@ -91,13 +91,11 @@ pub fn task05() {
 
     println!("Part 1: {lowest_mapping}");
 
-    let range_mapping = seeds
-        .par_chunks(2)
-        .flat_map(|chunk| {
-            let start = chunk[0];
-            let count = chunk[1];
-            start..start + count
-        });
+    let range_mapping = seeds.par_chunks(2).flat_map(|chunk| {
+        let start = chunk[0];
+        let count = chunk[1];
+        start..start + count
+    });
     let lowest_mapping = compute_lowest_mapping(range_mapping, &layers);
 
     println!("Part 2: {lowest_mapping}");
